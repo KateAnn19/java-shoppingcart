@@ -1,11 +1,14 @@
 package com.lambdaschool.shoppingcart.controllers;
 
 import com.lambdaschool.shoppingcart.models.User;
+import com.lambdaschool.shoppingcart.services.SecurityUserServiceImpl;
 import com.lambdaschool.shoppingcart.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +28,9 @@ public class UserController
 {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SecurityUserServiceImpl securityUserService;
 
     @GetMapping(value = "/users", produces = {"application/json"})
     public ResponseEntity<?> listAllUsers()
@@ -70,5 +76,26 @@ public class UserController
     {
         userService.delete(userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+//    Add a new endpoint
+//    http://localhost:2019/users/myinfo
+//    Any authenticated user can access this endpoint and it will return the authenticated users information
+    @GetMapping(value = "/myinfo", produces = "application/json")
+    public ResponseEntity<?> getCurrentUserInfo(Authentication authentication)
+    {
+        User u = userService.findByName(authentication.getName());
+
+        return new ResponseEntity<>(u, HttpStatus.OK);
+    }
+
+
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping(value = "/user/name/{userName}", produces = "application/json")
+    public ResponseEntity<?> getUserByName(@PathVariable String userName)
+    {
+        User u = userService.findByName(userName);
+        return new ResponseEntity<>(u, HttpStatus.OK);
     }
 }
