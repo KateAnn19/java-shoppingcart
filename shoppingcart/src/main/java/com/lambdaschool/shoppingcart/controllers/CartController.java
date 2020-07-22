@@ -82,10 +82,9 @@ public class CartController
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping(value = "/update/cart/{cartid}/product/{productid}")
-    public ResponseEntity<?> updateCart(@PathVariable long cartid,
-                                        @PathVariable long productid)
+    public ResponseEntity<?> updateCart(Authentication authentication, @PathVariable long cartid, @PathVariable long productid)
     {
         Cart dataCart = new Cart();
         dataCart.setCartid(cartid);
@@ -97,9 +96,9 @@ public class CartController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping(value = "/delete/cart/{cartid}/product/{productid}")
-    public ResponseEntity<?> deleteFromCart(@PathVariable long cartid,
-                                            @PathVariable long productid)
+    public ResponseEntity<?> deleteFromCart(Authentication authentication, @PathVariable long cartid, @PathVariable long productid)
     {
         Cart dataCart = new Cart();
         dataCart.setCartid(cartid);
