@@ -7,18 +7,21 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 
+//says who has access to what
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter
 {
     private static final String RESOURCE_ID = "resource_id";
 
+    //boiler
     @Override
     public void configure(ResourceServerSecurityConfigurer resources)
     {
         resources.resourceId(RESOURCE_ID)
             .stateless(false);
     }
+    //boiler
 
     @Override
     public void configure(HttpSecurity http) throws Exception
@@ -32,12 +35,15 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter
                 "/webjars/**").permitAll()
             .antMatchers("/users/**").authenticated()
             .antMatchers("/roles/**").hasAnyRole("ADMIN")
+            .antMatchers("/products/**").hasAnyRole("ADMIN")
             .and()
             .exceptionHandling()
             .accessDeniedHandler(new OAuth2AccessDeniedHandler());
+        //boiler
         http.csrf().disable();
         http.headers().frameOptions().deny();
         http.logout().disable();
+        //boiler
 
     }
 }

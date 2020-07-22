@@ -4,9 +4,12 @@ import com.lambdaschool.shoppingcart.models.Cart;
 import com.lambdaschool.shoppingcart.models.Product;
 import com.lambdaschool.shoppingcart.models.User;
 import com.lambdaschool.shoppingcart.services.CartService;
+import com.lambdaschool.shoppingcart.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +27,18 @@ public class CartController
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private UserService userService;
+
+    //NEW CODE
+    @GetMapping(value = "/user", produces = {"application/json"})
+    public ResponseEntity<?> getUsers(Authentication authentication)
+    {
+        User u = userService.findByName(authentication.getName());
+        return new ResponseEntity<>(u, HttpStatus.OK);
+    }
+    //NEW CODE
+
     @GetMapping(value = "/user/{userid}", produces = {"application/json"})
     public ResponseEntity<?> listAllCarts(@PathVariable long userid)
     {
@@ -31,16 +46,27 @@ public class CartController
         return new ResponseEntity<>(myCarts, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/cart/{cartId}",
-            produces = {"application/json"})
-    public ResponseEntity<?> getCartById(
-            @PathVariable
-                    Long cartId)
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping(value = "/cart/{cartId}", produces = {"application/json"})
+    public ResponseEntity<?> getCartById(@PathVariable Long cartId)
     {
         Cart p = cartService.findCartById(cartId);
-        return new ResponseEntity<>(p,
-                                    HttpStatus.OK);
+        return new ResponseEntity<>(p, HttpStatus.OK);
     }
+
+    //NEW CODE
+    @PostMapping(value = "/create/product/{productid}")
+    public ResponseEntity<?> addNewCart(Authentication authentication, @PathVariable long productid)
+    {
+        User u = userService.findByName(authentication.getName());
+
+        Product dataProduct = new Product();
+        dataProduct.setProductid(productid);
+
+        cartService.save(u, dataProduct);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+    //NEW CODE
 
     @PostMapping(value = "/create/user/{userid}/product/{productid}")
     public ResponseEntity<?> addNewCart(@PathVariable long userid,
@@ -56,6 +82,7 @@ public class CartController
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping(value = "/update/cart/{cartid}/product/{productid}")
     public ResponseEntity<?> updateCart(@PathVariable long cartid,
                                         @PathVariable long productid)

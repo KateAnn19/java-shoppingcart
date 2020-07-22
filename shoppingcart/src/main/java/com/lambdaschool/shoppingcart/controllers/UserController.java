@@ -32,6 +32,7 @@ public class UserController
     @Autowired
     private SecurityUserServiceImpl securityUserService;
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping(value = "/users", produces = {"application/json"})
     public ResponseEntity<?> listAllUsers()
     {
@@ -39,17 +40,16 @@ public class UserController
         return new ResponseEntity<>(myUsers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user/{userId}",
-            produces = {"application/json"})
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping(value = "/user/{userId}", produces = {"application/json"})
     public ResponseEntity<?> getUserById(
-            @PathVariable
-                    Long userId)
+            @PathVariable Long userId)
     {
         User u = userService.findUserById(userId);
-        return new ResponseEntity<>(u,
-                                    HttpStatus.OK);
+        return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping(value = "/user", consumes = {"application/json"})
     public ResponseEntity<?> addUser(@Valid @RequestBody User newuser)
     {
@@ -69,6 +69,7 @@ public class UserController
                                     HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping(value = "/user/{userId}")
     public ResponseEntity<?> deleteUserById(
             @PathVariable
@@ -91,7 +92,7 @@ public class UserController
 
 
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")//further restricts route (Resource Server Config)
     @GetMapping(value = "/user/name/{userName}", produces = "application/json")
     public ResponseEntity<?> getUserByName(@PathVariable String userName)
     {

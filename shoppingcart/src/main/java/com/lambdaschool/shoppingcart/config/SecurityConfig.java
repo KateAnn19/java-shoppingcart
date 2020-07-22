@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 
 @Configuration
 @EnableAuthorizationServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true) //tell Spring about security
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
     @Override
