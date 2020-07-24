@@ -36,11 +36,11 @@ public class User extends Auditable
 
     private String comments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = "user", allowSetters = true)
     private List<Cart> carts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) //user is inside UserRoles //no orphan removal because a role can stand on its' own
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) //user is inside UserRoles //no orphan removal because a role can stand on its' own
     @JsonIgnoreProperties(value = "users", allowSetters = true)
     private Set<UserRoles> roles = new HashSet<>();
 

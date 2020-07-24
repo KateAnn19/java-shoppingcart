@@ -31,7 +31,7 @@ public class Role extends Auditable
      * Creates a join table joining Users and Roles in a Many-To-Many relations.
      * Contains a List of Users Objects using this Role.
      */
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = "roles", allowSetters = true)
     private Set<UserRoles> users = new HashSet<>();
 

@@ -9,6 +9,7 @@ import java.io.Serializable;
 //does not have a primary key - only a composite primary key...we'll have to handle it manually
 @Entity
 @Table(name = "userroles")
+@IdClass(UserRolesId.class)
 public class UserRoles extends Auditable implements Serializable
 {
     //2 fields will have primary key
