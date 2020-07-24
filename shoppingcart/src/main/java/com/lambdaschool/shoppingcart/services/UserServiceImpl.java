@@ -13,8 +13,7 @@ import java.util.List;
 
 @Transactional
 @Service(value = "userService")
-public class UserServiceImpl
-        implements UserService
+public class UserServiceImpl implements UserService
 {
     /**
      * Connects this service to the users repository
@@ -62,6 +61,7 @@ public class UserServiceImpl
         User newUser = new User();
 
         newUser.setUsername(user.getUsername());
+        newUser.setPasswordNoEncrypt(user.getPassword());
         newUser.setComments(user.getComments());
 
         if (user.getCarts()
@@ -70,5 +70,16 @@ public class UserServiceImpl
             throw new ResourceFoundException("Carts are not added through users");
         }
         return userrepos.save(newUser);
+    }
+
+    @Override
+    public User findByName(String name)
+    {
+        User uu = userrepos.findByUsername(name.toLowerCase());
+        if (uu == null)
+        {
+            throw new ResourceNotFoundException("User name " + name + " not found!");
+        }
+        return uu;
     }
 }
